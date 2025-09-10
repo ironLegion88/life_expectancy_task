@@ -5,5 +5,5 @@ data/
 __pycache__/
 *.pyc
 
-# Environment files (good practice)
+# Environment files
 .venv/
