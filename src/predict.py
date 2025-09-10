@@ -9,6 +9,19 @@ from data_preprocessing import Preprocessor
 # Import the LinearRegression class
 from train_model import LinearRegression
 
+def calculate_mse(y_true, y_pred):
+    """Calculates Mean Squared Error."""
+    return np.mean((y_true - y_pred) ** 2)
+
+def calculate_rmse(mse):
+    """Calculates Root Mean Squared Error."""
+    return np.sqrt(mse)
+
+def calculate_r2(y_true, y_pred):
+    """Calculates R-squared (R2) score."""
+    ss_total = np.sum((y_true - np.mean(y_true)) ** 2)
+    ss_residual = np.sum((y_true - y_pred) ** 2)
+    return 1 - (ss_residual / ss_total)
 
 def main(args):
     """
@@ -39,7 +52,17 @@ def main(args):
     print("Generating predictions...")
     predictions = model.predict(X_eval)
     
-    # TODO: Calculate metrics
+    # --- 4. Calculate Metrics ---
+    print("Calculating metrics...")
+    y_eval_np = np.array(y_eval) # Ensure y is a numpy array
+    
+    mse = calculate_mse(y_eval_np, predictions)
+    rmse = calculate_rmse(mse)
+    r2 = calculate_r2(y_eval_np, predictions)
+    
+    print(f"  MSE: {mse:.2f}")
+    print(f"  RMSE: {rmse:.2f}")
+    print(f"  R-squared: {r2:.2f}")
     
     # TODO: Save predictions and metrics
     
