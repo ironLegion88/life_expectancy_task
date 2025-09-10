@@ -16,11 +16,28 @@ def main(args):
     """
     print("Starting evaluation script...")
     
-    # TODO: Load model and preprocessor
+    # --- 1. Load Model and Preprocessor ---
+    print(f"Loading model artifacts from {args.model_path}...")
+    with open(args.model_path, 'rb') as f:
+        artifacts = pickle.load(f)
     
-    # TODO: Load and preprocess data
+    model = artifacts['model']
+    preprocessor = artifacts['preprocessor']
+
+    # --- 2. Load and Preprocess Data ---
+    print(f"Loading data from {args.data_path}...")
+    eval_df = pd.read_csv(args.data_path)
     
-    # TODO: Make predictions
+    print("Preprocessing data...")
+    # Call 'transform', not 'fit_transform', to use the learned parameters
+    processed_df = preprocessor.transform(eval_df)
+    
+    X_eval = processed_df.drop(columns=['life_expectancy'])
+    y_eval = processed_df['life_expectancy']
+
+    # --- 3. Make Predictions ---
+    print("Generating predictions...")
+    predictions = model.predict(X_eval)
     
     # TODO: Calculate metrics
     
