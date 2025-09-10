@@ -64,8 +64,19 @@ def main(args):
     print(f"  RMSE: {rmse:.2f}")
     print(f"  R-squared: {r2:.2f}")
     
-    # TODO: Save predictions and metrics
+    # --- 5. Save Predictions and Metrics ---    
+    # Save predictions
+    print(f"Saving predictions to {args.predictions_output_path}...")
+    pd.DataFrame(predictions).to_csv(args.predictions_output_path, header=False, index=False)
     
+    # Save metrics in the specified format
+    print(f"Saving metrics to {args.metrics_output_path}...")
+    with open(args.metrics_output_path, 'w') as f:
+        f.write("Regression Metrics:\n")
+        f.write(f"Mean Squared Error (MSE): {mse:.2f}\n")
+        f.write(f"Root Mean Squared Error (RMSE): {rmse:.2f}\n")
+        f.write(f"R-squared (R2) Score: {r2:.2f}\n")
+        
     print("Evaluation script finished successfully.")
 
 
