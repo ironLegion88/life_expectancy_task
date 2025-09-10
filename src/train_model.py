@@ -89,11 +89,18 @@ def main():
 
     # --- 2. Train the Model ---
     print("Training Linear Regression model...")
-    # TODO: Instantiate and train the model
+    model = LinearRegression(learning_rate=0.01, n_iterations=1000)
+    model.fit(X, y)
+    
+    print("Model training complete.")
+    print(f"Learned Bias (Intercept): {model.bias:.4f}")
+    print(f"Learned Weights: {model.weights}")
 
     # --- 3. Save the Model ---
-    print("Saving model...")
-    # TODO: Save the trained model using pickle
+    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model1.pkl")
+    print(f"Saving model to {MODEL_PATH}...")
+    with open(MODEL_PATH, 'wb') as f:
+        pickle.dump(model, f)
     
     print("Training script finished successfully.")
 
