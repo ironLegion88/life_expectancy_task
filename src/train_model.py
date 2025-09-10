@@ -11,16 +11,59 @@ class LinearRegression:
     Implementation of Linear Regression using Gradient Descent.
     """
     def __init__(self, learning_rate=0.01, n_iterations=1000):
-        # TODO: Implement initialization
-        pass
+        self.learning_rate = learning_rate
+        self.n_iterations = n_iterations
+        self.weights = None
+        self.bias = None # Will handle the bias term explicitly
 
     def fit(self, X, y):
-        # TODO: Implement the training logic (Gradient Descent)
-        pass
+        """
+        Trains the linear regression model.
+
+        Args:
+            X (pd.DataFrame or np.ndarray): Training features
+            y (pd.Series or np.ndarray): Training target
+        """
+        n_samples, n_features = X.shape
+        
+        # 1. Initialize weights and bias
+        self.weights = np.zeros(n_features)
+        self.bias = 0
+
+        # Convert to numpy arrays for performance
+        X = np.array(X)
+        y = np.array(y)
+
+        # 2. Implement Gradient Descent
+        for _ in range(self.n_iterations):
+            # Calculate predictions: y_pred = X.w + b
+            y_pred = np.dot(X, self.weights) + self.bias
+
+            # Calculate gradients
+            dw = (1 / n_samples) * np.dot(X.T, (y_pred - y))
+            db = (1 / n_samples) * np.sum(y_pred - y)
+
+            # Update weights and bias
+            self.weights -= self.learning_rate * dw
+            self.bias -= self.learning_rate * db
 
     def predict(self, X):
-        # TODO: Implement the prediction logic
-        pass
+        """
+        Makes predictions using the trained model.
+
+        Args:
+            X (pd.DataFrame or np.ndarray): Features for which to make predictions.
+
+        Returns:
+            np.ndarray: The predicted values.
+        """
+        if self.weights is None:
+            raise RuntimeError("The model has not been trained yet. Call 'fit' first.")
+        
+        # Convert to numpy array
+        X = np.array(X)
+        
+        return np.dot(X, self.weights) + self.bias
 
 def main():
     """
