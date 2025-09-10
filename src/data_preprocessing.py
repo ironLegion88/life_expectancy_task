@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 class Preprocessor:
     """
@@ -101,4 +102,28 @@ class Preprocessor:
 
     def fit_transform(self, df):
         """A convenience method to fit and then transform."""
-        pass
+        self.fit(df)
+        return self.transform(df)
+
+# Main function to execute preprocessing
+if __name__ == '__main__':
+    # Load the raw data
+    try:
+        # Use os.path.join for platform-independent path handling
+        data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'train_data.csv')
+        raw_df = pd.read_csv(data_path)
+    except FileNotFoundError:
+        print("Error: train_data.csv not found. Make sure it's in the 'data' directory.")
+    else:
+        print("Original DataFrame shape:", raw_df.shape)
+        
+        # Instantiate and run the preprocessor
+        preprocessor = Preprocessor()
+        processed_data = preprocessor.fit_transform(raw_df)
+        
+        print("\nProcessed DataFrame shape:", processed_data.shape)
+        print("\nProcessed DataFrame Head:")
+        print(processed_data.head())
+        
+        print("\nChecking for missing values after processing:")
+        print(processed_data.isnull().sum().sum())
