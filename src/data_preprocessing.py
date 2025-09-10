@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 
 class Preprocessor:
@@ -68,7 +69,35 @@ class Preprocessor:
         Returns:
             pd.DataFrame: The preprocessed dataframe.
         """
-        pass
+        if self.imputation_medians is None or not self.scaling_params:
+            raise RuntimeError("You must call 'fit' before calling 'transform'.")
+
+        # 1. Clean column names
+        df = self._clean_column_names(df.copy())
+
+        # 2. Drop rows where target is missing
+        df.dropna(subset=[self.target_col], inplace=True)
+        
+        # 3. Separate target variable
+        y = df[self.target_col]
+        X = df.drop(columns=[self.target_col] + self.features_to_drop, errors='ignore')
+
+        # 4. Impute missing values in numeric columns
+        X[self.numeric_cols] = X[self.numeric_cols].fillna(self.imputation_medians)
+        
+        # 5. Handle categorical variables with one-hot encoding
+        X = pd.get_dummies(X, columns=self.categorical_cols, drop_first=True, dtype=float)
+
+        # 6. Scale numerical features
+        # Only scale columns that were present during fitting
+        cols_to_scale = [col for col in self.numeric_cols if col in X.columns]
+        X[cols_to_scale] = (X[cols_to_scale] - self.scaling_params['means']) / self.scaling_params['stds']
+        
+        # Combine features and target back into one dataframe for simplicity
+        processed_df = pd.concat([X, y], axis=1)
+        
+        print("Data transformed successfully.")
+        return processed_df
 
     def fit_transform(self, df):
         """A convenience method to fit and then transform."""
