@@ -96,11 +96,16 @@ def main():
     print(f"Learned Bias (Intercept): {model.bias:.4f}")
     print(f"Learned Weights: {model.weights}")
 
-    # --- 3. Save the Model ---
+    # --- 3. Save the Model and Preprocessor ---
+    MODEL_ARTIFACTS = {
+        'model': model,
+        'preprocessor': preprocessor
+    }
+    
     MODEL_PATH = os.path.join(MODELS_DIR, "regression_model1.pkl")
-    print(f"Saving model to {MODEL_PATH}...")
+    print(f"Saving model artifacts to {MODEL_PATH}...")
     with open(MODEL_PATH, 'wb') as f:
-        pickle.dump(model, f)
+        pickle.dump(MODEL_ARTIFACTS, f)
     
     print("Training script finished successfully.")
 
