@@ -1,1 +1,9 @@
+# Ignore the dataset
 data/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Environment files
+.venv/
