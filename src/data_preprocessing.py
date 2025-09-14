@@ -15,6 +15,7 @@ class Preprocessor:
         self.categorical_cols = None
         self.target_col = 'life_expectancy'
         self.features_to_drop = ['country']
+        self.one_hot_columns = None
 
     def _clean_column_names(self, df):
         """Standardizes column names."""
@@ -49,6 +50,8 @@ class Preprocessor:
 
         # 4. Learn imputation values (medians) for numeric columns
         self.imputation_medians = df[self.numeric_cols].median()
+        print(f"{self.imputation_medians}")
+        
 
         # 5. Learn scaling parameters (mean and std) for numeric columns
         # These will be learned after imputation to be technically correct,
@@ -56,6 +59,11 @@ class Preprocessor:
         temp_df_imputed = df[self.numeric_cols].fillna(self.imputation_medians)
         self.scaling_params['means'] = temp_df_imputed.mean()
         self.scaling_params['stds'] = temp_df_imputed.std()
+
+        # Store one-hot encoded column names
+        temp_X = df.drop(columns=[self.target_col] + self.features_to_drop)
+        temp_X = pd.get_dummies(temp_X, columns=self.categorical_cols, drop_first=True, dtype=float)
+        self.one_hot_columns = temp_X.columns.to_list()
 
         print("Preprocessor fitted successfully.")
         return self
@@ -71,7 +79,7 @@ class Preprocessor:
             pd.DataFrame: The preprocessed dataframe.
         """
         if self.imputation_medians is None or not self.scaling_params:
-            raise RuntimeError("You must call 'fit' before calling 'transform'.")
+            raise RuntimeError("You must call 'fit' on train dataset before calling 'transform'.")
 
         # 1. Clean column names
         df = self._clean_column_names(df.copy())
@@ -80,8 +88,8 @@ class Preprocessor:
         df.dropna(subset=[self.target_col], inplace=True)
         
         # 3. Separate target variable
-        y = df[self.target_col]
-        X = df.drop(columns=[self.target_col] + self.features_to_drop, errors='ignore')
+        y = df[self.target_col] if self.target_col in df.columns else None
+        X = df.drop(columns=[self.target_col] + self.features_to_drop)
 
         # 4. Impute missing values in numeric columns
         X[self.numeric_cols] = X[self.numeric_cols].fillna(self.imputation_medians)
@@ -95,7 +103,7 @@ class Preprocessor:
         X[cols_to_scale] = (X[cols_to_scale] - self.scaling_params['means']) / self.scaling_params['stds']
         
         # Combine features and target back into one dataframe for simplicity
-        processed_df = pd.concat([X, y], axis=1)
+        processed_df = pd.concat([X, y], axis=1) if y is not None else X
         
         print("Data transformed successfully.")
         return processed_df
