@@ -7,7 +7,7 @@ import numpy as np
 # Import the Preprocessor class
 from data_preprocessing import Preprocessor
 # Import the LinearRegression class
-from train_model import LinearRegression
+from train_model import LinearRegression, RidgeRegression
 
 def calculate_mse(y_true, y_pred):
     """Calculates Mean Squared Error."""
