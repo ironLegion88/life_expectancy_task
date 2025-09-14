@@ -100,7 +100,7 @@ def main():
 
     # --- 2. Train the Model ---
     print("Training Linear Regression model...")
-    model = LinearRegression(learning_rate=0.01, n_iterations=1000)
+    model = LinearRegression(learning_rate=0.01, n_iterations=10000)
     model.fit(X, y)
     
     print("Model training complete.")
@@ -113,7 +113,7 @@ def main():
         'preprocessor': preprocessor
     }
     
-    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model1.pkl")
+    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model2.pkl")
     print(f"Saving model artifacts to {MODEL_PATH}...")
     with open(MODEL_PATH, 'wb') as f:
         pickle.dump(MODEL_ARTIFACTS, f)
