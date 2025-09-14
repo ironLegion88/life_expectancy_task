@@ -34,10 +34,21 @@ class LinearRegression:
         X = np.array(X)
         y = np.array(y)
 
+        # List to store the cost
+        self.cost_history = []
+
         # 2. Implement Gradient Descent
-        for _ in range(self.n_iterations):
+        for i in range(self.n_iterations):
             # Calculate predictions: y_pred = X.w + b
             y_pred = np.dot(X, self.weights) + self.bias
+
+            # Calculate cost (MSE) for this iteration
+            cost = np.mean((y_pred - y) ** 2)
+            self.cost_history.append(cost)
+
+            # Print cost every 100 iterations to monitor progress
+            if i % 100 == 0:
+                print(f"Iteration {i}: MSE = {cost:.4f}")
 
             # Calculate gradients
             dw = (1 / n_samples) * np.dot(X.T, (y_pred - y))
@@ -89,7 +100,7 @@ def main():
 
     # --- 2. Train the Model ---
     print("Training Linear Regression model...")
-    model = LinearRegression(learning_rate=0.01, n_iterations=1000)
+    model = LinearRegression(learning_rate=0.01, n_iterations=10000)
     model.fit(X, y)
     
     print("Model training complete.")
@@ -102,7 +113,7 @@ def main():
         'preprocessor': preprocessor
     }
     
-    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model1.pkl")
+    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model2.pkl")
     print(f"Saving model artifacts to {MODEL_PATH}...")
     with open(MODEL_PATH, 'wb') as f:
         pickle.dump(MODEL_ARTIFACTS, f)
