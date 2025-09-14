@@ -26,7 +26,6 @@ class LinearRegression:
         """
         n_samples, n_features = X.shape
         
-        # 1. Initialize weights and bias
         self.weights = np.zeros(n_features)
         self.bias = 0
 
@@ -37,13 +36,13 @@ class LinearRegression:
         # List to store the cost
         self.cost_history = []
 
-        # 2. Implement Gradient Descent
+        # Implement Gradient Descent
         for i in range(self.n_iterations):
             # Calculate predictions: y_pred = X.w + b
             y_pred = np.dot(X, self.weights) + self.bias
 
             # Calculate cost (MSE) for this iteration
-            cost = np.mean((y_pred - y) ** 2)
+            cost = 0.5 * np.mean((y_pred - y) ** 2)
             self.cost_history.append(cost)
 
             # Print cost every 100 iterations to monitor progress
@@ -105,7 +104,7 @@ class RidgeRegression(LinearRegression):
             y_pred = np.dot(X, self.weights) + self.bias
             
             # Cost (MSE + L2 penalty)
-            mse = np.mean((y_pred - y) ** 2)
+            mse = 0.5 * np.mean((y_pred - y) ** 2)
             l2_penalty = (self.alpha / (2 * n_samples)) * np.sum(np.square(self.weights))
             cost = mse + l2_penalty
             self.cost_history.append(cost)
@@ -121,11 +120,43 @@ class RidgeRegression(LinearRegression):
             self.weights -= self.learning_rate * dw
             self.bias -= self.learning_rate * db
 
+# def k_cross_validation(model, X, y, k=10):
+#     """
+#     Perform K-Fold Cross Validation
+    
+#     Args:
+#         model: The model
+#         X (pd.DataFrame): Features
+#         y (pd.Series): Target
+#         k (int): number of folds
+
+#     Returns:
+#         float: Average MSE across k folds
+#     """
+#     n_samples = len(X)
+#     print(n_samples)
+#     indices = np.arange(n_samples)
+#     print(indices)
+
+#     fold_sizes = np.full(k, n_samples // k, dtype=int)
+#     print(fold_sizes)
+#     fold_sizes[:n_samples % k] += 1
+#     current = 0
+#     folds = []
+#     for fold_size in fold_sizes:
+#         start, stop = current, current + fold_size
+#         folds.append(indices[start:stop])
+#         current = stop
+
+
+
+
 def main():
     """
     Main function to train the model and save it.
     """
     DATA_PATH = os.path.join("..", "data", "train_data.csv")
+    print(DATA_PATH)
     MODELS_DIR = os.path.join("..", "models")
     
     if not os.path.exists(MODELS_DIR):
@@ -142,25 +173,29 @@ def main():
     X = processed_df.drop(columns=['life_expectancy'])
     y = processed_df['life_expectancy']
 
-    print("Training Ridge Regression model...")
-    ridge_model = RidgeRegression(learning_rate=0.01, n_iterations=10000, alpha=0.5)
-    ridge_model.fit(X, y)
-    
-    print("Model training complete.")
-    print(f"Learned Bias (Intercept): {ridge_model.bias:.4f}")
-    print(f"Learned Weights: {ridge_model.weights}")
+    model = RidgeRegression(learning_rate=0.01, n_iterations=1000, alpha=0.5)
 
-    MODEL_ARTIFACTS = {
-        'model': ridge_model,
-        'preprocessor': preprocessor
-    }
+    # k_cross_validation(model, X, y)
+
+    # print("Training Ridge Regression model...")
+    # ridge_model = RidgeRegression(learning_rate=0.01, n_iterations=10000, alpha=0.5)
+    # ridge_model.fit(X, y)
     
-    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model3.pkl")
-    print(f"Saving model artifacts to {MODEL_PATH}...")
-    with open(MODEL_PATH, 'wb') as f:
-        pickle.dump(MODEL_ARTIFACTS, f)
+    # print("Model training complete.")
+    # print(f"Learned Bias (Intercept): {ridge_model.bias:.4f}")
+    # print(f"Learned Weights: {ridge_model.weights}")
+
+    # MODEL_ARTIFACTS = {
+    #     'model': ridge_model,
+    #     'preprocessor': preprocessor
+    # }
     
-    print("Training script finished successfully.")
+    # MODEL_PATH = os.path.join(MODELS_DIR, "regression_model3.pkl")
+    # print(f"Saving model artifacts to {MODEL_PATH}...")
+    # with open(MODEL_PATH, 'wb') as f:
+    #     pickle.dump(MODEL_ARTIFACTS, f)
+    
+    # print("Training script finished successfully.")
 
 if __name__ == '__main__':
     main()
