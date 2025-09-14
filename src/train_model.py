@@ -125,7 +125,6 @@ def main():
     """
     Main function to train the model and save it.
     """
-    # --- 1. Load and Preprocess Data ---
     DATA_PATH = os.path.join("..", "data", "train_data.csv")
     MODELS_DIR = os.path.join("..", "models")
     
@@ -143,22 +142,20 @@ def main():
     X = processed_df.drop(columns=['life_expectancy'])
     y = processed_df['life_expectancy']
 
-    # --- 2. Train the Model ---
-    print("Training Linear Regression model...")
-    model = LinearRegression(learning_rate=0.01, n_iterations=10000)
-    model.fit(X, y)
+    print("Training Ridge Regression model...")
+    ridge_model = RidgeRegression(learning_rate=0.01, n_iterations=10000, alpha=0.5)
+    ridge_model.fit(X, y)
     
     print("Model training complete.")
-    print(f"Learned Bias (Intercept): {model.bias:.4f}")
-    print(f"Learned Weights: {model.weights}")
+    print(f"Learned Bias (Intercept): {ridge_model.bias:.4f}")
+    print(f"Learned Weights: {ridge_model.weights}")
 
-    # --- 3. Save the Model and Preprocessor ---
     MODEL_ARTIFACTS = {
-        'model': model,
+        'model': ridge_model,
         'preprocessor': preprocessor
     }
     
-    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model2.pkl")
+    MODEL_PATH = os.path.join(MODELS_DIR, "regression_model3.pkl")
     print(f"Saving model artifacts to {MODEL_PATH}...")
     with open(MODEL_PATH, 'wb') as f:
         pickle.dump(MODEL_ARTIFACTS, f)
