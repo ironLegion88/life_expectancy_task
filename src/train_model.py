@@ -5,6 +5,7 @@ import pickle
 
 # Import the preprocessor
 from data_preprocessing import Preprocessor, k_fold_split
+from predict import calculate_mse, calculate_rmse, calculate_r2
 
 class LinearRegression:
     """
@@ -247,6 +248,25 @@ def main():
     # Separate features (X) and target (y)
     X = processed_df.drop(columns=['life_expectancy'])
     y = processed_df['life_expectancy']
+
+    # --- 2. Train the Polynomial Model ---
+    print("\n--- Training Polynomial Regression Model ---")
+    poly_model = PolynomialRegression(learning_rate=0.001, n_iterations=100000)
+    poly_model.fit(X, y)
+    print("Polynomial model training complete.")
+
+    print("\n--- Quick Performance Sanity Check ---")
+    X_poly = polynomial_features(X, degree=2)
+    predictions = poly_model.predict(X)
+    
+    y_np = np.array(y)
+    mse = calculate_mse(y_np, predictions)
+    rmse = calculate_rmse(mse)
+    r2 = calculate_r2(y_np, predictions)
+    
+    print(f"  MSE on training data: {mse:.2f}")
+    print(f"  RMSE on training data: {rmse:.2f}")
+    print(f"  R-squared on training data: {r2:.2f}")
 
 
     folds = k_fold_split(processed_df, k=5, random_seed=42)
