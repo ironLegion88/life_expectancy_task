@@ -46,7 +46,7 @@ class LinearRegression:
             self.cost_history.append(cost)
 
             # Print cost every 100 iterations to monitor progress
-            if i % 100 == 0:
+            if i % 1000 == 0:
                 print(f"Iteration {i}: MSE = {cost:.4f}")
 
             # Calculate gradients
@@ -247,17 +247,17 @@ def main():
 
     # experiemenent runner to make it easy to train multiple models
     experiments = [
-        ("LinearRegression_0.01", LinearRegression, {"learning_rate": 0.01, "n_iterations": 2000}),
-        ("LinearRegression_0.05", LinearRegression, {"learning_rate": 0.05, "n_iterations": 2000}),
-        ("RidgeRegression_0.1", RidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        ("RidgeRegression_1.0", RidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
-        ("LassoRegression_0.1", LassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        ("LassoRegression_1.0", LassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
-        ("Poly2_Linear", PolynomialRegression, {"learning_rate": 0.01, "n_iterations": 2000}),
-        ("Poly2_Ridge_0.1", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        ("Poly2_Ridge_1.0", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
-        ("Poly2_Lasso_0.1", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        ("Poly2_Lasso_1.0", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
+        ("LinearRegression_0.3", LinearRegression, {"learning_rate": 0.3, "n_iterations": 10000}),
+        ("LinearRegression_0.1", LinearRegression, {"learning_rate": 0.1, "n_iterations": 10000}),
+        ("RidgeRegression_0.2", RidgeRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 0.2}),
+        ("RidgeRegression_1", RidgeRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 1}),
+        ("LassoRegression_1", LassoRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 1}),
+        ("LassoRegression_0.2", LassoRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 0.2}),
+        # ("Poly2_Linear", PolynomialRegression, {"learning_rate": 0.01, "n_iterations": 2000}),
+        # ("Poly2_Ridge_0.1", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
+        # ("Poly2_Ridge_1.0", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
+        # ("Poly2_Lasso_0.1", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
+        # ("Poly2_Lasso_1.0", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
     ]
 
     def mse(y_true, y_pred): return np.mean((y_true - y_pred) ** 2)
