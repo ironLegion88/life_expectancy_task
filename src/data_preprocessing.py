@@ -2,6 +2,37 @@ import pandas as pd
 import numpy as np
 import os
 
+def k_fold_split(data, k=5, random_seed=None):
+    """
+    Splits the dataset indices into k folds for cross-validation.
+    Returns a list of (train_indices, val_indices) tuples for each fold.
+    Args:
+        data (pd.DataFrame or np.ndarray): The dataset to split.
+        k (int): Number of folds.
+        random_seed (int, optional): Seed for reproducibility.
+    Returns:
+        List of (train_indices, val_indices) tuples.
+    """
+    if isinstance(data, pd.DataFrame):
+        n_samples = len(data)
+    else:
+        n_samples = data.shape[0]
+    indices = np.arange(n_samples)
+    if random_seed is not None:
+        np.random.seed(random_seed)
+    np.random.shuffle(indices)
+    fold_sizes = np.full(k, n_samples // k, dtype=int)
+    fold_sizes[:n_samples % k] += 1
+    current = 0
+    folds = []
+    for fold_size in fold_sizes:
+        start, stop = current, current + fold_size
+        val_indices = indices[start:stop]
+        train_indices = np.concatenate([indices[:start], indices[stop:]])
+        folds.append((train_indices, val_indices))
+        current = stop
+    return folds
+
 class Preprocessor:
     """
     A class to handle all preprocessing steps for the Life Expectancy dataset.
