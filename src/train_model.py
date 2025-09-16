@@ -5,7 +5,6 @@ import pickle
 
 # Import the preprocessor
 from data_preprocessing import Preprocessor, k_fold_split
-from predict import calculate_mse, calculate_rmse, calculate_r2
 
 class LinearRegression:
     """
