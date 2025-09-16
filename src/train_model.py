@@ -163,66 +163,73 @@ class LassoRegression(LinearRegression):
 def polynomial_features(X, degree=2):
     """
     Generates polynomial features up to the given degree for input X (numpy array or DataFrame).
-    Only supports degree=2 for now.
-    Returns a new numpy array with original, squared, and interaction terms.
     """
     if isinstance(X, pd.DataFrame):
         X = X.values
     n_samples, n_features = X.shape
+
     features = [X]
 
-    features.append(X ** degree)
-    # Add interaction terms
-    for i in range(n_features):
-        for j in range(i+1, n_features):
-            interaction = (X[:, i] * X[:, j]).reshape(-1, 1)
-            features.append(interaction)
+    # Add polynomial terms
+    for d in range(2, degree + 1):
+        features.append(X ** d)
+
+    # Add interaction terms (only for degree 2 for simplicity)
+    if degree >= 2:
+        for i in range(n_features):
+            for j in range(i + 1, n_features):
+                interaction = (X[:, i] * X[:, j]).reshape(-1, 1)
+                features.append(interaction)
+                
     return np.concatenate(features, axis=1)
 
 # Polynomial regression classes (degree 2) appended at the end to avoid NameError
 class PolynomialRegression(LinearRegression):
     """
-    Simple degree-2 polynomial regression using LinearRegression on polynomial features.
+    Degree-n polynomial regression using feature expansion.
     """
-    def __init__(self, learning_rate=0.01, n_iterations=1000):
+    def __init__(self, degree=2, learning_rate=0.01, n_iterations=1000):
         super().__init__(learning_rate=learning_rate, n_iterations=n_iterations)
+        self.degree = degree
 
     def fit(self, X, y):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         super().fit(X_poly, y)
 
     def predict(self, X):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         return super().predict(X_poly)
 
 class PolynomialRidgeRegression(RidgeRegression):
     """
-    Degree-2 polynomial regression with L2 regularization.
+    Degree-n polynomial regression with L2 regularization.
     """
-    def __init__(self, learning_rate=0.01, n_iterations=1000, alpha=0.1):
+    def __init__(self, degree=2, learning_rate=0.01, n_iterations=1000, alpha=0.1):
         super().__init__(learning_rate=learning_rate, n_iterations=n_iterations, alpha=alpha)
+        self.degree = degree
 
     def fit(self, X, y):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         super().fit(X_poly, y)
 
     def predict(self, X):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         return super().predict(X_poly)
 
 class PolynomialLassoRegression(LassoRegression):
     """
-    Degree-2 polynomial regression with L1 regularization.
+    Degree-n polynomial regression with L1 regularization.
     """
-    def __init__(self, learning_rate=0.01, n_iterations=1000, alpha=0.1):
+    def __init__(self, degree=2, learning_rate=0.01, n_iterations=1000, alpha=0.1):
         super().__init__(learning_rate=learning_rate, n_iterations=n_iterations, alpha=alpha)
+        self.degree = degree
 
     def fit(self, X, y):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         super().fit(X_poly, y)
 
     def predict(self, X):
-        X_poly = polynomial_features(X, degree=2)
+        X_poly = polynomial_features(X, degree=self.degree)
         return super().predict(X_poly)
 
 
