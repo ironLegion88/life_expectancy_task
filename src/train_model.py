@@ -46,7 +46,7 @@ class LinearRegression:
             self.cost_history.append(cost)
 
             # Print cost every 100 iterations to monitor progress
-            if i % 1000 == 0:
+            if i % 100 == 0:
                 print(f"Iteration {i}: MSE = {cost:.4f}")
 
             # Calculate gradients
@@ -70,6 +70,7 @@ class LinearRegression:
         if self.weights is None:
             raise RuntimeError("The model has not been trained yet. Call 'fit' first.")
         
+        # Convert to numpy array
         X = np.array(X)
         
         return np.dot(X, self.weights) + self.bias
@@ -181,6 +182,7 @@ def polynomial_features(X, degree=2):
                 
     return np.concatenate(features, axis=1)
 
+# Polynomial regression classes (degree 2) appended at the end to avoid NameError
 class PolynomialRegression(LinearRegression):
     """
     Degree-n polynomial regression using feature expansion.
@@ -380,89 +382,6 @@ def main():
     summary_df = pd.DataFrame(results).sort_values(by='avg_rmse').reset_index(drop=True)
     print(summary_df)
 
-
-    # experiemenent runner to make it easy to train multiple models
-    experiments = [
-        ("LinearRegression_0.3", LinearRegression, {"learning_rate": 0.3, "n_iterations": 10000}),
-        ("LinearRegression_0.1", LinearRegression, {"learning_rate": 0.1, "n_iterations": 10000}),
-        ("RidgeRegression_0.2", RidgeRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 0.2}),
-        ("RidgeRegression_1", RidgeRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 1}),
-        ("LassoRegression_1", LassoRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 1}),
-        ("LassoRegression_0.2", LassoRegression, {"learning_rate": 0.3, "n_iterations": 10000, "alpha": 0.2}),
-        # ("Poly2_Linear", PolynomialRegression, {"learning_rate": 0.01, "n_iterations": 2000}),
-        # ("Poly2_Ridge_0.1", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        # ("Poly2_Ridge_1.0", PolynomialRidgeRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
-        # ("Poly2_Lasso_0.1", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 0.1}),
-        # ("Poly2_Lasso_1.0", PolynomialLassoRegression, {"learning_rate": 0.01, "n_iterations": 2000, "alpha": 1.0}),
-    ]
-
-    def mse(y_true, y_pred): return np.mean((y_true - y_pred) ** 2)
-    def rmse(y_true, y_pred): return np.sqrt(mse(y_true, y_pred))
-    def r2_score(y_true, y_pred):
-        ss_res = np.sum((y_true - y_pred) ** 2)
-        ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
-        if ss_tot == 0: return 1.0 # Handle case of perfect prediction or constant y
-        return 1 - (ss_res / ss_tot)
-
-    results = []
-    best_avg_rmse = float('inf')
-    best_model_info = {}
-
-    for exp_idx, (exp_name, model_class, params) in enumerate(experiments):
-        fold_metrics = []
-        print(f"\nRunning Experiment: {exp_name}")
-
-        for fold_idx, (train_idx, val_idx) in enumerate(folds):
-            # Create a NEW model instance for each fold
-            model = model_class(**params)
-
-            X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
-            X_val, y_val = X.iloc[val_idx], y.iloc[val_idx]
-            
-        
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_val)
-
-            mse_val = mse(y_val, y_pred)
-            rmse_val = rmse(y_val, y_pred)
-            r2_val = r2_score(y_val, y_pred)
-            fold_metrics.append({"mse": mse_val, "rmse": rmse_val, "r2": r2_val})
-            print(f"  Fold {fold_idx}: RMSE={rmse_val:.4f}, R2={r2_val:.4f}")
-
-        avg_rmse = np.mean([m["rmse"] for m in fold_metrics])
-        avg_r2 = np.mean([m["r2"] for m in fold_metrics])
-        
-        results.append({"experiment": exp_name, "avg_rmse": avg_rmse, "avg_r2": avg_r2})
-
-        if avg_rmse < best_avg_rmse:
-            best_avg_rmse = avg_rmse
-            best_model_info = {
-                "name": exp_name,
-                "class": model_class,
-                "params": params,
-                "avg_rmse": avg_rmse
-            }
-            print(f"  New best model found: {exp_name} with avg RMSE: {avg_rmse:.4f}")
-
-    # After finding the best hyperparameters, train the final model on ALL data
-    print("\n--------------------------------------------------")
-    print(f"Best model hyperparameters found: {best_model_info['name']}")
-    print(f"Training final model on all data...")
-
-    final_model = best_model_info['class'](**best_model_info['params'])
-    
-    
-    final_model.fit(X, y)
-
-    final_model_path = os.path.join(MODELS_DIR, "regression_model_final.pkl")
-    with open(final_model_path, "wb") as f:
-        pickle.dump(final_model, f)
-    print(f"Best model saved to {final_model_path}")
-
-    # Print summary table
-    print("Experiment Results Summary:\n")
-    summary_df = pd.DataFrame(results).sort_values(by='avg_rmse').reset_index(drop=True)
-    print(summary_df)
 
 if __name__ == '__main__':
     main()
